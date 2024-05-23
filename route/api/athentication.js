@@ -1,12 +1,23 @@
 const express = require('express');
+const Register = require('../../controller/register');
+const multer = require('multer');
+const Login = require('../../controller/login');
 const router = express.Router();
-// Middleware to parse JSON bodies
 
 router.use(express.json());
 
-router.post('/registration', (req, res) => {
-    console.log('Received a registration POST request!');
-    res.send('Registration successful!');
-});
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "public/uploads/"); 
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname); 
+    },
+  });
+
+  const upload = multer({storage});
+
+router.post("/register", upload.single("profileImage"), Register)
+router.post("/login", Login)
 
 module.exports = router;
