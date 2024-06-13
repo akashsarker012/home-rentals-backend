@@ -1,5 +1,6 @@
 const userSchema = require("../models/userSchema");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 async function Login(req, res) {
     try {
@@ -14,8 +15,13 @@ async function Login(req, res) {
         if (!isMatch) {
           return res.status(400).json({ message: "Invalid Credentials!"})
         }
-        res.status(200).json({ user })
-        console.log(user);
+        
+        // Generate JWT token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
+        delete user.password
+    
+        res.status(200).json({ token, user })
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: "Internal Server Error"});
